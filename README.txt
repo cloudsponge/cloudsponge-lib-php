@@ -1,4 +1,4 @@
-CloudSponge.com PHP Library 0.9.2 Beta
+CloudSponge.com PHP Library 0.9.3 Beta
 
 This library consists of one php file that provides an interface to CloudSponge.com API. Other files are included to present an example of the usage of the library and CloudSponge.com API.
 
