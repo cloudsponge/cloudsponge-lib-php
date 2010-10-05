@@ -199,14 +199,13 @@ EOS;
     
     // post the response
     $response = CSImport::post_url($url, $params);
-    
     // decode the response into an asscoiative array
-    $resp = CSImport::decode_response($response['body'], 'json');
+    $resp = CSImport::decode_response($response, 'json');
     
     if (array_key_exists('error', $resp) ) {
       throw new CSException($resp['error']['message'], $response['code']);
     }
-
+    
     return $resp;
   }
   static function get_and_decode_response($full_url) {
@@ -214,7 +213,7 @@ EOS;
     $response = CSImport::get_url($full_url);
     
     // decode the response into an asscoiative array
-    $resp = CSImport::decode_response($response['body'], 'json');
+    $resp = CSImport::decode_response($response, 'json');
     
     if (array_key_exists('error', $resp) ) {
       throw new CSException($resp['error']['message'], $response['code']);
@@ -268,9 +267,14 @@ EOS;
   static function decode_response($response, $format = 'json'){
     $object = null;
     try {
-      $object = json_decode($response, true);
+      $object = json_decode($response['body'], true);
     } catch (Exception $e) {
       // try to decode another way, manually (?)
+    }
+    
+    if (!isset($object)) {
+      print_r($response);
+      throw new CSException($response['body'], $response['code']);
     }
     return $object;
   }
