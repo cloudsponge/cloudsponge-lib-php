@@ -234,12 +234,16 @@ EOS;
     $agent = curl_init();
     
     // get the url requested
-    curl_setopt($agent, CURLOPT_URL, $url); 
+    if (!curl_setopt($agent, CURLOPT_URL, $url)) {
+      return array('code' => 0, 'body' => curl_error($agent));
+    }
     
     if ($method == 'post')
     {
       // this is a post request
-      curl_setopt($agent, CURLOPT_POST, 1);
+      if (!curl_setopt($agent, CURLOPT_POST, 1)) {
+        return array('code' => 0, 'body' => curl_error($agent));
+      }
       
       if (is_a($params, 'array')) {
         $encoded_params = http_build_query($params);
@@ -247,17 +251,25 @@ EOS;
         $encoded_params = $params;
       }
       // here is the post data
-      curl_setopt($agent, CURLOPT_POSTFIELDS, $encoded_params);
+      if (!curl_setopt($agent, CURLOPT_POSTFIELDS, $encoded_params)) {
+        return array('code' => 0, 'body' => curl_error($agent));
+      }
     }
     
     //return the transfer as a string 
-    curl_setopt($agent, CURLOPT_RETURNTRANSFER, 1); 
+    if (!curl_setopt($agent, CURLOPT_RETURNTRANSFER, 1)) {
+      return array('code' => 0, 'body' => curl_error($agent));
+    }
     
     // $output contains the output string 
-    $output = curl_exec($agent);
+    if (($output = curl_exec($agent)) === false) {
+      return array('code' => 0, 'body' => curl_error($agent));
+    }
     
     // get the http response code
-    $code = curl_getinfo($agent, CURLINFO_HTTP_CODE);
+    if (($code = curl_getinfo($agent, CURLINFO_HTTP_CODE)) === false) {
+      return array('code' => 0, 'body' => curl_error($agent));
+    }
     
     // close curl resource to free up system resources 
     curl_close($agent);
