@@ -9,5 +9,10 @@
 // graeme@cloudsponge.com
 
 require_once 'csimport.php';
-echo CSImport::forward_auth($_GET, $_POST);
+$response = CSImport::forward_auth($_GET, $_POST);
+if (isset($response['redirect'])) {
+  header($response['redirect']);
+} else {
+  echo $response['body'];
+}
 ?>

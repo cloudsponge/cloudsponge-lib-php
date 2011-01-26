@@ -153,6 +153,9 @@ class CSImport implements iCSConstants {
     return Array('contacts' => $contacts, 'contacts_owner' => $contacts_owner);
   }
   
+  // forwards the auth token from WL, yahoo or gmail to CloudSponge.com
+  // Returns the response object with an addtional paramter: 'redirect'
+  //  'redirect' is set only if the response is a redirect response.
   static function forward_auth($get_params, $post_params = null) {
     $post_params['appctx'] = stripslashes($post_params['appctx']);
     $url = CSImport::URL_BASE . 'auth?' . http_build_query($get_params);
@@ -161,9 +164,13 @@ class CSImport implements iCSConstants {
     } else {
       $response = CSImport::get_url($url);
     }
-    return $response['body'];
+    
+    if (preg_match("/Location: (.*)$/m", $response['header'], $matches) > 0) {
+      $response['redirect'] = $matches[0];
+    }
+    return $response;
   }
-  
+
   /* Private Utility Functions */
   static function full_url($path) {
     return CSImport::URL_BASE . CSImport::BEGIN_PATH . $path;
@@ -232,19 +239,19 @@ EOS;
   static function url_request($url, $method = 'get', $params = null) {
     // init the curl agent
     $agent = curl_init();
-    
+
     // get the url requested
     if (!curl_setopt($agent, CURLOPT_URL, $url)) {
       return array('code' => 0, 'body' => curl_error($agent));
     }
-    
+
     if ($method == 'post')
     {
       // this is a post request
       if (!curl_setopt($agent, CURLOPT_POST, 1)) {
         return array('code' => 0, 'body' => curl_error($agent));
       }
-      
+
       if (is_a($params, 'array')) {
         $encoded_params = http_build_query($params);
       } else {
@@ -255,14 +262,19 @@ EOS;
         return array('code' => 0, 'body' => curl_error($agent));
       }
     }
-    
+
     //return the transfer as a string 
     if (!curl_setopt($agent, CURLOPT_RETURNTRANSFER, 1)) {
       return array('code' => 0, 'body' => curl_error($agent));
     }
-    
-    // $output contains the output string 
-    if (($output = curl_exec($agent)) === false) {
+
+    // Get just the head
+    if (!curl_setopt($agent, CURLOPT_HEADER, true) || !curl_setopt($agent, CURLOPT_NOBODY, true)) {
+      return array('code' => 0, 'body' => curl_error($agent));
+    }
+
+    // $head contains the response header 
+    if (($head = curl_exec($agent)) === false) {
       return array('code' => 0, 'body' => curl_error($agent));
     }
     
@@ -271,10 +283,22 @@ EOS;
       return array('code' => 0, 'body' => curl_error($agent));
     }
     
+    if ($code != 301 && $code != 302) {
+      // get just the body
+      if (!curl_setopt($agent, CURLOPT_HEADER, false) || !curl_setopt($agent, CURLOPT_NOBODY, false)) {
+        return array('code' => 0, 'body' => curl_error($agent));
+      }
+      
+      // $output contains the output string 
+      if (($body = curl_exec($agent)) === false) {
+        return array('code' => 0, 'body' => curl_error($agent));
+      }
+    }
+
     // close curl resource to free up system resources 
     curl_close($agent);
-    
-    return array('code' => $code, 'body' => $output);
+
+    return array('code' => $code, 'body' => $body, 'header' => $head);
   }
   static function decode_response($response, $format = 'json'){
     $object = null;
