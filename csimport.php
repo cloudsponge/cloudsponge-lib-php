@@ -248,11 +248,11 @@ EOS;
     if ($method == 'post')
     {
       // this is a post request
-      if (!curl_setopt($agent, CURLOPT_POST, 1)) {
+      if (!curl_setopt($agent, CURLOPT_POST, true)) {
         return array('code' => 0, 'body' => curl_error($agent));
       }
 
-      if (is_a($params, 'array')) {
+      if (is_a($params, 'Array')) {
         $encoded_params = http_build_query($params);
       } else {
         $encoded_params = $params;
@@ -268,31 +268,26 @@ EOS;
       return array('code' => 0, 'body' => curl_error($agent));
     }
 
-    // Get just the head
-    if (!curl_setopt($agent, CURLOPT_HEADER, true) || !curl_setopt($agent, CURLOPT_NOBODY, true)) {
+    // get the header and the body at once
+    if (!curl_setopt($agent, CURLOPT_HEADER, true) || !curl_setopt($agent, CURLOPT_NOBODY, false)) {
       return array('code' => 0, 'body' => curl_error($agent));
     }
 
-    // $head contains the response header 
-    if (($head = curl_exec($agent)) === false) {
+    // $output contains the output string 
+    if (($output = curl_exec($agent)) === false) {
       return array('code' => 0, 'body' => curl_error($agent));
     }
-    
+
+    preg_match("/(.*)(<html>.*<\/html>)/is", $output, $match);
+
+    if (isset($match)) {
+      $head = $match[1];
+      $body = $match[2];
+    }
+
     // get the http response code
     if (($code = curl_getinfo($agent, CURLINFO_HTTP_CODE)) === false) {
       return array('code' => 0, 'body' => curl_error($agent));
-    }
-    
-    if ($code != 301 && $code != 302) {
-      // get just the body
-      if (!curl_setopt($agent, CURLOPT_HEADER, false) || !curl_setopt($agent, CURLOPT_NOBODY, false)) {
-        return array('code' => 0, 'body' => curl_error($agent));
-      }
-      
-      // $output contains the output string 
-      if (($body = curl_exec($agent)) === false) {
-        return array('code' => 0, 'body' => curl_error($agent));
-      }
     }
 
     // close curl resource to free up system resources 
