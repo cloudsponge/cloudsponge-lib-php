@@ -301,11 +301,11 @@ EOS;
       return array('code' => 0, 'body' => curl_error($agent));
     }
 
-    preg_match("/(.*)(<html>.*<\/html>)/is", $output, $match);
+    $match = preg_split("/\n\s*\n/s", $output, 2);
 
     if (isset($match)) {
-      $head = $match[1];
-      $body = $match[2];
+      $head = $match[0];
+      $body = $match[1];
     }
 
     // get the http response code
