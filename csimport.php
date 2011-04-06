@@ -157,9 +157,11 @@ class CSImport implements iCSConstants {
   // Returns the response object with an addtional paramter: 'redirect'
   //  'redirect' is set only if the response is a redirect response.
   static function forward_auth($get_params, $post_params = null) {
-    $post_params['appctx'] = stripslashes($post_params['appctx']);
     $url = CSImport::URL_BASE . 'auth?' . http_build_query($get_params);
     if (isset($post_params)) {
+      if(in_array('appctx', $post_params)) {
+        $post_params['appctx'] = stripslashes($post_params['appctx']);
+      }
       $response = CSImport::post_url($url, $post_params);
     } else {
       $response = CSImport::get_url($url);
@@ -301,12 +303,9 @@ EOS;
       return array('code' => 0, 'body' => curl_error($agent));
     }
 
-    $match = preg_split("/\n\s*\n/s", $output, 2);
-
-    if (isset($match)) {
-      $head = $match[0];
-      $body = $match[1];
-    }
+    $header_size = curl_getinfo($agent, CURLINFO_HEADER_SIZE);
+    $head = substr($output, 0, $header_size);
+    $body = substr($output, $header_size);
 
     // get the http response code
     if (($code = curl_getinfo($agent, CURLINFO_HTTP_CODE)) === false) {
