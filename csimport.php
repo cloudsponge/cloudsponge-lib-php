@@ -143,10 +143,13 @@ class CSImport implements iCSConstants {
     }
     
     // interpret the result
-    if (array_key_exists('contacts', $resp))
+    if (array_key_exists('contacts', $resp) && isset($resp['contacts']))
       $contacts = CSContact::from_array($resp['contacts']);
-
-    if (array_key_exists('contacts_owner', $resp))
+    
+    // It's possible that the contacts_owner value is null so 
+    // we shouldn't attempt to create a contact if that is so
+    // Thanks to Marty Cortez, Lead Developer at GiveForward.com for brining up this condition, 
+    if (array_key_exists('contacts_owner', $resp) && isset($resp['contacts_owner'])) 
       $contacts_owner = new CSContact($resp['contacts_owner']);
 
     // return the response object
@@ -346,25 +349,29 @@ class CSContact {
   }
   
   function __construct($contact_data) {
-    // get the basic data
-    $this->first_name = $contact_data['first_name'];
-    $this->last_name = $contact_data['last_name'];
-    // get the phone numbers
-    if (array_key_exists('phone', $contact_data) && !is_null($contact_data['phone'])) {
-      foreach ($contact_data['phone'] as $phone) {
-        if (array_key_exists('type',$phone))
-          $this->add_phone($phone['number'], $phone['type']);
-        else
-          $this->add_phone($phone['number']);
+    // $contact_data shouldn't be NULL in most cases, but it is possible to have a owner_contact that is null.
+    // Thanks to Marty Cortez, of GiveForward.com for catching and resolving this.
+    if (isset($contact_data)) {
+      // get the basic data
+      $this->first_name = $contact_data['first_name'];
+      $this->last_name = $contact_data['last_name'];
+      // get the phone numbers
+      if (array_key_exists('phone', $contact_data) && !is_null($contact_data['phone'])) {
+        foreach ($contact_data['phone'] as $phone) {
+          if (array_key_exists('type',$phone))
+            $this->add_phone($phone['number'], $phone['type']);
+          else
+            $this->add_phone($phone['number']);
+        }
       }
-    }
-    // get the email addresses
-    if (array_key_exists('email', $contact_data) && !is_null($contact_data['email'])) {
-      foreach ($contact_data['email'] as $email) {
-        if (array_key_exists('type',$email))
-          $this->add_email($email['address'], $email['type']);
-        else
-          $this->add_email($email['address']);
+      // get the email addresses
+      if (array_key_exists('email', $contact_data) && !is_null($contact_data['email'])) {
+        foreach ($contact_data['email'] as $email) {
+          if (array_key_exists('type',$email))
+            $this->add_email($email['address'], $email['type']);
+          else
+            $this->add_email($email['address']);
+        }
       }
     }
   }
