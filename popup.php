@@ -35,10 +35,10 @@ if (array_key_exists('service', $_GET)) {
 <p>Contacts are being imported. Please do not close this popup window. </p>
 <script type="text/javascript">
   // redirect the opener to start fetching events and updating with the current progress
-  window.opener.location = 'step_2_events.php?import_id=<?=$import_id?>';
+  window.opener.location = 'step_2_events.php?import_id=<?php echo $import_id?>';
 <?php if (isset($url)) { ?>
   // redirect the popup to the appropriate url
-  this.location = '<?=$url?>';
+  this.location = '<?php echo $url?>';
 <?php } ?>
 </script>
 </body>

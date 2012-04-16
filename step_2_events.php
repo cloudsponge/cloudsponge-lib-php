@@ -25,7 +25,7 @@ function retrieve_events($import_id, $timeout) {
     }
     // look for the COMPLETED/COMPLETE event... this indicates the import is completely done
     if ($event['event_type'] == "COMPLETE" && $event['status'] == "COMPLETED" && $event['value'] == 0) {
-      $contine = true;
+      $continue = true;
       $reload = false;
     }
   }
@@ -42,16 +42,16 @@ function retrieve_events($import_id, $timeout) {
 <script type="text/javascript">
 // only execute the timeout if the popup is still open, if the user canceled by closing it, then we are done...
 // This could be cleaned up by using ajax, instead of an entire page refresh
-  setTimeout("window.location = 'step_2_events.php?import_id=<?=$import_id?>'", <?=$timeout?>);
+  setTimeout("window.location = 'step_2_events.php?import_id=<?php echo $import_id?>'", <?php echo $timeout?>);
 </script>
 
 <?php 
-  } else if ($contine) {
+  } else if ($continue) {
     // redirect the page to the final step.
     ?>
 
 <script type="text/javascript">
-window.location = 'step_3_contacts.php?import_id=<?=$import_id?>';
+window.location = 'step_3_contacts.php?import_id=<?php echo $import_id?>';
 </script>
 
     <?php
