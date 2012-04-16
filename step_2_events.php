@@ -42,7 +42,7 @@ function retrieve_events($import_id, $timeout) {
 <script type="text/javascript">
 // only execute the timeout if the popup is still open, if the user canceled by closing it, then we are done...
 // This could be cleaned up by using ajax, instead of an entire page refresh
-  setTimeout("window.location = 'step_2_events.php?import_id=<?php echo $import_id?>'", <?php echo $timeout?>);
+  setTimeout("window.location = 'step_2_events.php?import_id=<?php echo $import_id; ?>'", <?php echo $timeout; ?>);
 </script>
 
 <?php 
@@ -51,7 +51,7 @@ function retrieve_events($import_id, $timeout) {
     ?>
 
 <script type="text/javascript">
-window.location = 'step_3_contacts.php?import_id=<?php echo $import_id?>';
+window.location = 'step_3_contacts.php?import_id=<?php echo $import_id; ?>';
 </script>
 
     <?php

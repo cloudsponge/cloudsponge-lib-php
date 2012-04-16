@@ -5,9 +5,9 @@
 <body> 
 <form method="get">
 URL:<br/> 
-<input type="text" size="60" name="url" value="<?php echo $_GET['url']?>"/> <br />
+<input type="text" size="60" name="url" value="<?php echo $_GET['url']; ?>"/> <br />
 FORM Body:<br /> 
-<textarea rows="10" cols="40" name="body"><?php echo $_GET['body']?></textarea> <br />
+<textarea rows="10" cols="40" name="body"><?php echo $_GET['body']; ?></textarea> <br />
 <input type="submit"/>
 </form>
 
