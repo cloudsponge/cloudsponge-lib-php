@@ -28,7 +28,7 @@ class CSImport implements iCSConstants {
   //    ['consent_url'] => NULL | $consent_url,
   //    ['applet_tag']  => NULL | $applet_tag
   //  )
-  static function begin_import($source_name, $username = NULL, $password = NULL, $tracking_string = '', $redirect_url = NULL) {
+  static function begin_import($source_name, $username = NULL, $password = NULL, $tracking_string = '', $redirect_url = NULL, $options = array()) {
     // $this->source_name = $source_name;
     // $this->redirect_url = $redirect_url;
     // $this->import_tracking_id = $tracking_string;
@@ -38,13 +38,13 @@ class CSImport implements iCSConstants {
     
     // look at the given service and decide how which begin function to invoke.
     if (!empty($username)) {
-      $resp = CSImport::begin_import_username_password($source_name, $username, $password, $tracking_string);
+      $resp = CSImport::begin_import_username_password($source_name, $username, $password, $tracking_string, $options);
     } else {
       if (strcasecmp($source_name, "OUTLOOK") == 0 || strcasecmp($source_name, "ADDRESSBOOK") == 0) {
-        $resp = CSImport::begin_import_applet($source_name, $tracking_string);
+        $resp = CSImport::begin_import_applet($source_name, $tracking_string, $options);
         $applet_tag = CSImport::create_applet_tag($resp['id'], $resp['url']);
       } else {
-        $resp = CSImport::begin_import_consent($source_name, $tracking_string, $redirect_url);
+        $resp = CSImport::begin_import_consent($source_name, $tracking_string, $redirect_url, $options);
         $consent_url = $resp['url'];
       }
     }
@@ -56,9 +56,9 @@ class CSImport implements iCSConstants {
   // invokes the begin import action for the user consent process.
   // returns the URL of the consent page that the user must use to sign in and grant consent
   // throws an exception if an invalid service is invoked.
-  static function begin_import_consent($source_name, $tracking_string = NULL, $redirect_url = NULL) {
+  static function begin_import_consent($source_name, $tracking_string = NULL, $redirect_url = NULL, $options = array()) {
     // we need to pass in all params to the call
-    $params = array('service' => $source_name, 'tracking_string' => $tracking_string, 'redirect_url' => $redirect_url);
+    $params = array_merge($options, array('service' => $source_name, 'tracking_string' => $tracking_string, 'redirect_url' => $redirect_url));
     
     // get and decode the response into an associated array
     // Throws an exception if there was a problem at the server
@@ -71,9 +71,9 @@ class CSImport implements iCSConstants {
   // invokes the begin import action for the desktop applet import process.
   // returns the URL of the applet that should be displayed to the user within the appropriate applet tag
   // throws an exception if an invalid service is invoked.
-  static function begin_import_applet($source_name, $tracking_string = NULL) {
+  static function begin_import_applet($source_name, $tracking_string = NULL, $options = array()) {
     // we need to pass in all params to the call
-    $params = array('service' => $source_name, 'tracking_string' => $tracking_string);
+    $params = array_merge($options, array('service' => $source_name, 'tracking_string' => $tracking_string));
 
     // get and decode the response into an associated array
     // Throws an exception if there was a problem at the server
@@ -86,10 +86,10 @@ class CSImport implements iCSConstants {
   // invokes the begin import action for the desktop applet import process.
   // returns the URL of the applet that should be displayed to the user within the appropriate applet tag
   // throws an exception if an invalid service is invoked.
-  static function begin_import_username_password($source_name, $username, $password, $tracking_string = NULL) {
+  static function begin_import_username_password($source_name, $username, $password, $tracking_string = NULL, $options = array()) {
     // we need to pass in all params to the call
-    $params = array('service' => $source_name, 'tracking_string' => $tracking_string, 'username' => $username, 'password' => $password);
-
+    $params = array_merge($options, array('service' => $source_name, 'tracking_string' => $tracking_string, 'username' => $username, 'password' => $password));
+    
     // get and decode the response into an associated array
     // Throws an exception if there was a problem at the server
     $resp = CSImport::post_and_decode_response(CSImport::full_url(CSImport::IMPORT_PATH), $params);
@@ -373,6 +373,12 @@ class CSContact {
             $this->add_email($email['address']);
         }
       }
+      // get the mailing addresses
+      if (array_key_exists('address', $contact_data) && !is_null($contact_data['address'])) {
+        foreach ($contact_data['address'] as $addr) {
+          $this->addresses[] = $addr;
+        }
+      }
     }
   }
   
@@ -381,6 +387,7 @@ class CSContact {
   var $last_name;
   var $emails = array();
   var $phones = array();
+  var $addresses = array();
   
   function name() {
     return $this->first_name . " " . $this->last_name;

@@ -16,7 +16,7 @@ if (array_key_exists('service', $_GET)) {
     $password = $_GET['password'];
     
   // Call to the CloudSponge.com for the import_id and redirect url (if applicable)
-  $output = CSImport::begin_import($_GET['service'], $username, $password, NULL);
+  $output = CSImport::begin_import($_GET['service'], $username, $password, NULL, NULL, array('include' => "name,email,mailing_address"));
   if (isset($output['import_id']))
   {
     $import_id = $output['import_id'];
