@@ -39,6 +39,7 @@ class CSImport implements iCSConstants {
     // look at the given service and decide how which begin function to invoke.
     if (!empty($username)) {
       $resp = CSImport::begin_import_username_password($source_name, $username, $password, $tracking_string, $options);
+      $consent_url = $resp['url'];
     } else {
       if (strcasecmp($source_name, "OUTLOOK") == 0 || strcasecmp($source_name, "ADDRESSBOOK") == 0) {
         $resp = CSImport::begin_import_applet($source_name, $tracking_string, $options);
