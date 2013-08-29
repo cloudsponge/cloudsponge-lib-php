@@ -19,3 +19,8 @@ Point your browser at step_1_start.php in your web directory and run the sample 
 
 For additional support or feedback contact graeme@cloudsponge.com.
 
+Dependencies
+
+This library depends on PHP >= 5.2.0 or PECL json >= 1.2.0. If upgrading your version of PHP is not an option, consider installing the PECL json library.
+
+Openssl and libcurl are also required.
