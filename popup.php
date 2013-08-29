@@ -3,8 +3,13 @@
   <title>Import Contacts - Popup</title>
 </head>
 <body>
-<?php 
+<?php
 require_once 'csimport.php';
+
+$verbose = array_key_exists('verbose', $_GET);
+if ($verbose) {
+  echo "Verbose output is enabled!<br/>";
+}
 
 if (array_key_exists('service', $_GET)) {
   // Step 1
@@ -14,9 +19,13 @@ if (array_key_exists('service', $_GET)) {
     $username = $_GET['username'];
   if (array_key_exists('password', $_GET))
     $password = $_GET['password'];
-    
+
   // Call to the CloudSponge.com for the import_id and redirect url (if applicable)
   $output = CSImport::begin_import($_GET['service'], $username, $password, NULL, NULL, array('include' => "name,email,mailing_address"));
+  if ($verbose) {
+    print_r($output);
+  }
+  
   if (isset($output['import_id']))
   {
     $import_id = $output['import_id'];
@@ -30,7 +39,7 @@ if (array_key_exists('service', $_GET)) {
   } else {
     echo "trouble...";
   }
-} 
+}
 ?>
 <p>Contacts are being imported. Please do not close this popup window. </p>
 <script type="text/javascript">

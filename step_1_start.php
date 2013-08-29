@@ -1,3 +1,9 @@
+<?php
+$verbose = array_key_exists('verbose', $_GET);
+if ($verbose) {
+  echo "Verbose output is enabled!<br/>";
+}
+?>
 <html>
 <head>
   <title>Import Contacts - Step 1</title>
@@ -33,6 +39,7 @@ function open_popup(service, focus, username, password, url) {
   if (username != null) {
     url = url + '&username=' + username + '&password=' + password;
   }
+  <?php if ($verbose) { echo "url = url + \"&verbose=1\";"; } ?>
 
   popup_height = '300';
   popup_width = '500';
