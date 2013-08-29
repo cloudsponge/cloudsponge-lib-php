@@ -8,7 +8,7 @@ Click to import your address book from one of the providers below:
 <a href='index.php?service=yahoo'       onclick="return open_popup('yahoo', true);">Yahoo!</a>
 <a href='index.php?service=windowslive' onclick="return open_popup('windowslive', true)">Windows Live</a>
 <a href='index.php?service=gmail'       onclick="return open_popup('gmail', true)">Gmail</a>
-<a href='index.php?service=aol'         onclick="return show_u_p_fields('aol');">AOL</a>
+<a href='index.php?service=aol'         onclick="return open_popup('aol', true);">AOL</a>
 <a href='index.php?service=plaxo'       onclick="return show_u_p_fields('plaxo');">Plaxo</a>
 <a href='index.php?service=outlook'     onclick="return open_popup('outlook', false)">Outlook</a>
 <a href='index.php?service=addressbook' onclick="return open_popup('addressbook', false)">Mac Address Book</a>
@@ -28,7 +28,7 @@ function show_u_p_fields(service_name) {
   return false;
 }
 function open_popup(service, focus, username, password, url) {
-  if (url == undefined) { url = 'popup.php'; }
+  if (url === undefined) { url = 'popup.php'; }
   url = url + '?service=' + service;
   if (username != null) {
     url = url + '&username=' + username + '&password=' + password;
@@ -36,21 +36,21 @@ function open_popup(service, focus, username, password, url) {
 
   popup_height = '300';
   popup_width = '500';
-  
+
   if (service == 'yahoo') {
     popup_height = '500';
     popup_width = '500';
   } else if (service == 'gmail') {
     popup_height = '600';
     popup_width = '987';
-  } else if (service == 'windowslive') {
-    popup_height = '600';
-    popup_width = '987';
-  } else if (service == 'aol' || service == 'plaxo') {
+  } else if (service == 'windowslive' || service == 'aol') {
+    popup_height = '550';
+    popup_width = '600';
+  } else {
     popup_height = '600';
     popup_width = '987';
   }
-  
+
   popup = window.open(url, "_popupWindow", 'height='+popup_height+',width='+popup_width+',location=no,menubar=no,resizable=no,status=no,toolbar=no');
   if (focus) {
     popup.focus();
@@ -58,10 +58,10 @@ function open_popup(service, focus, username, password, url) {
   else {
     window.focus();
   }
-  
+
   // wait for the popup window to indicate the import_id to start checking for events...
-  
-  return (undefined == popup);
+
+  return (undefined === popup);
 }
 </script>
 </body>
