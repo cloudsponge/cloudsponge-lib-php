@@ -11,7 +11,7 @@ This library consists of one php file that provides an interface to CloudSponge.
 
 This library depends on PHP >= 5.2.0 or PECL json >= 1.2.0. If upgrading your version of PHP is not an option, consider installing the [PECL json library](http://pecl.php.net/package/json).
 
-Openssl and libcurl are also required.
+Openssl and libcurl are also required. For HTTPS connections you may need to install a CA certificate bundle. A [bundle](http://curl.haxx.se/docs/caextract.html) has been converted for use with cURL by Haxx. [Background](http://curl.haxx.se/docs/sslcerts.html).
 
 ## Files:
 * csimport.php - library that interfaces with CloudSponge.com
