@@ -13,6 +13,10 @@ This library depends on PHP >= 5.2.0 or PECL json >= 1.2.0. If upgrading your ve
 
 Openssl and libcurl are also required. For HTTPS connections you may need to install a CA certificate bundle. A [bundle](http://curl.haxx.se/docs/caextract.html) has been converted for use with cURL by Haxx. [Background](http://curl.haxx.se/docs/sslcerts.html).
 
+### SSL Issues
+
+SSL related errors are usually resoved by updating your CA certificate bundle. A [certificate bundle](http://curl.haxx.se/docs/caextract.html) has been converted for use with cURL by Haxx. You can read some [background here](http://curl.haxx.se/docs/sslcerts.html).
+
 ## Files:
 * csimport.php - library that interfaces with CloudSponge.com
 * csconstants.php - example constants definition that should be modified to include your own CloudSponge.com credentials.
